@@ -1,0 +1,260 @@
+/* SnakeGame-JS, Web Browser Game for Educational Purposes
+    Copyright (C) 2019 Alexander Kravchuk gn0ume@ya.ru
+* */
+
+body {
+    font-family: 'Major Mono Display', monospace;
+    background-image: url("img/snake.png");
+    background-repeat: no-repeat;
+    background-position-x: calc(50% - 215px);
+    color: white;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */ /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+footer{
+    font-family: "Courier New";
+    color: grey;
+    font-size: 12px;
+    text-align: center;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+.main {
+    margin: 0 auto;
+    border: 1px solid black;
+    width: 450px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-shadow: 5px 5px 14px rgba(0,0,0,0.2);
+    box-shadow: 5px 5px 14px rgba(0,0,0,0.2);
+    background: rgba(86, 137, 62, 0.53);
+    border-radius: 5px;
+}
+
+.scores {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+
+#gameField{
+    color: #5f7634;
+    font-family: "Courier New", monospace;
+    border: 1px solid #5f7634;
+    line-height: 23px;
+    padding: 1px;
+    display: inline-block;
+    height: 400px;
+    width: 400px;
+    background-color: #fdfdfd;
+    -webkit-box-shadow: inset 2px 2px 13px rgba(0,0,0,.5);
+    box-shadow: inset 2px 2px 13px rgba(0,0,0,.5);
+    border-radius: 5px;
+    overflow: hidden;
+}
+#gameField div.cell{
+    display: inline-block;
+    text-align: center;
+    font-size: 26px;
+    background-position: 0 0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+#gameField .headCell{
+    background-image: url("img/head.png");
+}
+#gameField .blackBodyCell{
+    background: black;
+}
+#gameField .bodyCell{
+    background-image: url("img/body.png");
+}
+#gameField .tailCell{
+    background-image: url("img/tail.png");
+}
+#gameField .turnCell{
+    background-image: url("img/turn.png");
+}
+#gameField .right{
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+#gameField .down{
+    -webkit-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+#gameField .left{
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+
+}
+
+#gameField .foodCell{
+    background-image: url("img/apple.png");
+}
+
+#gameField .wallCell{
+    background-image: url("img/stone.png");
+}
+
+@-webkit-keyframes apple-appearence {
+    from {background-size: 1%; background-position: 50% 50%;}
+    to {background-size: 100%; background-position: 50% 50%;}
+}
+@keyframes apple-appearence {
+    from {background-size: 1%; background-position: 50% 50%;}
+    to {background-size: 100%; background-position: 50% 50%;}
+}
+#gameField.large .foodCell{
+    background-size: 10px 10px;
+}
+#gameField.small .foodCell{
+    background-size: 20px 20px;
+}
+#gameField.large div.cell{
+    width: 10px;
+    height: 10px;
+}
+#gameField.large .row{
+    line-height:10px;
+    height: 10px;
+}
+
+#gameField.small div.cell{
+    width: 20px;
+    height: 20px;
+}
+#gameField.small .row{
+    line-height:20px;
+    height: 20px;
+}
+
+.centered{
+    text-align: center;
+}
+
+
+span.invisible{
+    color: transparent;
+}
+
+.control {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.toggle {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    padding: 10px;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    display: inline-block;
+}
+
+.switch input {
+    display: none;
+}
+
+.switch .slider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #e7e982;
+    -webkit-transition: all .2s;
+    -o-transition: all .2s;
+    transition: all .2s;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.switch .slider::before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    background-color: #5f7634;
+    left: 4px;
+    top: 3px;
+    -webkit-transition: all .2s;
+    -o-transition: all .2s;
+    transition: all .2s;
+    border-radius: 50%;
+}
+
+.switch input:checked +.slider {
+    background-color: #c4f57b;
+}
+
+.switch input:checked +.slider::before {
+    left: 32px;
+}
+
+.switch_title {
+    font-size: 10px;
+    font-weight: 700;
+    margin: 0 3px 0 3px;
+}
+
+button {
+    display: block;
+    width: 90px;
+    height: 36px;
+    border-radius: 4px;
+    font-family: 'Major Mono Display';
+    font-size: 10px;
+    font-weight: 400;
+    color: white;
+}
+
+.start {
+    background-color: darkolivegreen;
+}
+
+.stop {
+    background-color: darkorange;
+}
