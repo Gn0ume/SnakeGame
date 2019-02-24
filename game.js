@@ -5,26 +5,26 @@ const DEFAULT_TICK = 300;
 let tick;
 let intervalID;
 let matrix;
+let bodyQueue;
 
 drawLogo();
 
-function drawLogo(){
+function drawLogo() {
     SnakeCanvas.draw(SnakeCanvas.getSnakeSign());
 }
 
 // functions block
-SnakeCanvas.onStart(()=>{
+SnakeCanvas.onStart(() => {
     matrix = createFieldMatrix();
+    eraseBodyQueue();
     tick = DEFAULT_TICK;
     const currentHeadPosition = initialPosition();
-    console.log(`Head position is: x ${currentHeadPosition.x}, y ${currentHeadPosition.y}`)
-    matrix[currentHeadPosition.x][currentHeadPosition.y] = SnakeCanvas.cell_types.body;
-    SnakeCanvas.draw(matrix);
+    bodyQueue.push(currentHeadPosition);
     beginTicks();
 });
 
 
-SnakeCanvas.onStop(()=>{
+SnakeCanvas.onStop(() => {
     drawLogo();
     stopTicks();
 });
@@ -57,11 +57,29 @@ function initialPosition() {
 function beginTicks() {
     // initiate timer
     intervalID = setInterval(() => {
-        next_step();
+        nextStep();
     }, tick);
 }
 
 
-function next_step() {
-    console.log('Step');
+function nextStep() {
+    goToNextCell();
+    drawBody();
+    SnakeCanvas.draw(matrix);
+}
+
+function goToNextCell() {
+    const currentHeadPosition = {...bodyQueue[bodyQueue.length - 1]};
+    currentHeadPosition.y++;
+    bodyQueue.push(currentHeadPosition);
+}
+
+function eraseBodyQueue() {
+    bodyQueue = [];
+}
+
+function drawBody() {
+    bodyQueue.map(chunk => {
+        matrix[chunk.x][chunk.y] = SnakeCanvas.cell_types.body;
+    })
 }
