@@ -1,27 +1,67 @@
+// constants block
+const FIELD_SIZE = SnakeCanvas.getSize();
+const DEFAULT_TICK = 300;
+// variables block
+let tick;
+let intervalID;
+let matrix;
+
+drawLogo();
+
+function drawLogo(){
+    SnakeCanvas.draw(SnakeCanvas.getSnakeSign());
+}
+
+// functions block
 SnakeCanvas.onStart(()=>{
-    console.log('Game Started');
+    matrix = createFieldMatrix();
+    tick = DEFAULT_TICK;
+    const currentHeadPosition = initialPosition();
+    console.log(`Head position is: x ${currentHeadPosition.x}, y ${currentHeadPosition.y}`)
+    matrix[currentHeadPosition.x][currentHeadPosition.y] = SnakeCanvas.cell_types.body;
+    SnakeCanvas.draw(matrix);
+    beginTicks();
 });
+
 
 SnakeCanvas.onStop(()=>{
-    console.log('Game Stopped');
+    drawLogo();
+    stopTicks();
 });
 
-SnakeCanvas.onRight(()=>{
-    alert('Turn to the right');
-});
+function stopTicks() {
+    // clear timer
+    clearInterval(intervalID);
+}
 
-SnakeCanvas.onLeft(()=>{
-    alert('Turn to the left');
-});
+function createFieldMatrix() {
+    const matrix = [];
+    for (let i = 0; i <= FIELD_SIZE; i++) {
+        const row = [];
+        for (let j = 0; j <= FIELD_SIZE; j++) {
+            row.push(SnakeCanvas.cell_types.empty);
+        }
+        matrix.push(row);
+    }
+    return matrix;
+}
 
-SnakeCanvas.onDown(()=>{
-    alert('Turn to down');
-});
+function initialPosition() {
+    const center = Math.floor((FIELD_SIZE) / 2);
+    return {
+        x: center,
+        y: center
+    };
+}
 
-SnakeCanvas.onUp(()=>{
-    alert('Turn to up');
-});
+function beginTicks() {
+    // initiate timer
+    intervalID = setInterval(() => {
+        next_step();
+    }, tick);
+}
 
-console.log(SnakeCanvas.getSnakeSign());
 
-SnakeCanvas.draw(SnakeCanvas.getSnakeSign());
+function next_step() {
+    console.log('Step');
+}
