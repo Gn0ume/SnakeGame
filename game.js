@@ -15,6 +15,11 @@ const SNAKE_DIRECTIONS = {
     }
 };
 const TICK_INTERVAL = 10;
+const WALL_LENGTH = 5;
+const FATAL_CELLS = [
+    SnakeCanvas.cell_types.wall,
+    SnakeCanvas.cell_types.body
+];
 
 // variables block
 let tick;
@@ -33,8 +38,10 @@ function drawLogo() {
 
 // functions block
 SnakeCanvas.onStart(() => {
+    if(SnakeCanvas.askPlayerName() === null) return false;
     scores = 0;
     matrix = createFieldMatrix();
+    drawCornerWalls();
     eraseBodyQueue();
     eraseStepsQueue();
     tick = DEFAULT_TICK;
@@ -95,6 +102,10 @@ function nextStep() {
     } else {
         cutTail();
     }
+    if(FATAL_CELLS.find(val => val.name === nextCell.name)) {
+        SnakeCanvas.gameOver();
+        return false;
+    }
     drawBody();
     SnakeCanvas.draw(matrix);
 }
@@ -119,6 +130,7 @@ function goToNextCell() {
             break;
     }
     bodyQueue.push(currentHeadPosition);
+    normalizeCoordinates(currentHeadPosition);
     const nextCell = matrix[currentHeadPosition.x][currentHeadPosition.y];
     return nextCell;
 }
@@ -131,6 +143,13 @@ function drawBody() {
     bodyQueue.map(chunk => {
         matrix[chunk.x][chunk.y] = SnakeCanvas.cell_types.body;
     })
+}
+
+function normalizeCoordinates(coordinates){
+    coordinates.x = coordinates.x > FIELD_SIZE ? 0 : coordinates.x;
+    coordinates.x = coordinates.x < 0 ? FIELD_SIZE : coordinates.x;
+    coordinates.y = coordinates.y > FIELD_SIZE ? 0 : coordinates.y;
+    coordinates.y = coordinates.y < 0 ? FIELD_SIZE : coordinates.y;
 }
 
 function getLastDirection() {
@@ -188,7 +207,7 @@ const generateFood = function () {
     do {
         coordinates.x = randomInteger(0, FIELD_SIZE);
         coordinates.y = randomInteger(0, FIELD_SIZE);
-    } while (SnakeCanvas.cell_types.body.name === matrix[coordinates.x][coordinates.y].name);
+    } while (FATAL_CELLS.find(val => val.name === matrix[coordinates.x][coordinates.y].name));
     matrix[coordinates.x][coordinates.y] = SnakeCanvas.cell_types.food;
     SnakeCanvas.foodSound();
 };
@@ -201,4 +220,17 @@ function cutTail() {
     const tail = bodyQueue[0];
     matrix[tail.x][tail.y] = SnakeCanvas.cell_types.empty;
     bodyQueue.shift();
+}
+
+function drawCornerWalls(){
+    for(let i = 0; i < WALL_LENGTH; i++){
+        matrix[0][i] = SnakeCanvas.cell_types.wall;
+        matrix[FIELD_SIZE][i] = SnakeCanvas.cell_types.wall;
+        matrix[0][FIELD_SIZE - i] = SnakeCanvas.cell_types.wall;
+        matrix[FIELD_SIZE][FIELD_SIZE - i] = SnakeCanvas.cell_types.wall;
+        matrix[i][0] = SnakeCanvas.cell_types.wall;
+        matrix[i][FIELD_SIZE] = SnakeCanvas.cell_types.wall;
+        matrix[FIELD_SIZE - i][0] = SnakeCanvas.cell_types.wall;
+        matrix[FIELD_SIZE - i][FIELD_SIZE] = SnakeCanvas.cell_types.wall;
+    }
 }
